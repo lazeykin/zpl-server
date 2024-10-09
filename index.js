@@ -17,7 +17,7 @@ app.get('/default', (req, res) => {
     "uid": "Zebra ZP 500 (ZPL)",
     "provider": "com.zebra.ds.webdriver.desktop.provider.DefaultDeviceProvider",
     "name": "Zebra ZP 500 (ZPL)",
-    "connection": "driver",
+    "connection": "usb",
     "version": 3,
     "manufacturer": "Zebra Technologies"
   })
@@ -54,10 +54,15 @@ app.get('/config', (req, res) => {
 app.get('/available', (req, res) => {
   console.log('GET request for /available recieved')
   res.json({
-    "deviceList": [
+    "printer": [
       {
+        "deviceType": "printer",
         "uid": "Zebra ZP 500 (ZPL)",
-        "name": "Zebra ZP 500 (ZPL)"
+        "provider": "com.zebra.ds.webdriver.desktop.provider.DefaultDeviceProvider",
+        "name": "Zebra ZP 500 (ZPL)",
+        "connection": "usb",
+        "version": 3,
+        "manufacturer": "Zebra Technologies"
       }
     ]
   })
@@ -65,7 +70,7 @@ app.get('/available', (req, res) => {
 
 app.post('/read', (req, res) => {
   console.log('POST request for /read recieved')
-  res.status(200).send();
+  res.status(200).send('0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000');
 })
 
 app.post('/write', (req, res) => {
@@ -73,6 +78,7 @@ app.post('/write', (req, res) => {
   console.log('data:', (req && req.body) ? req.body.data : '"data" missing req.body');
   console.log('---------------------------------------\n')
   if (process.env.CHROME_EXTENSION_ENABLED === String(true)) {
+    console.log('inside chrome extension');
     const port = process.env.CHROME_EXTENSION_PORT ?? '9102';
     // const payload = typeof req.body.data === 'string' ? req.body.data : Buffer.from(req.body.data);
     fetch(`http://localhost:${port}`, { method: 'POST', body: '{"mode":"print","epl":"' + Buffer.from(req.body.data) + '"}' })
